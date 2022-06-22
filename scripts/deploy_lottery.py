@@ -5,6 +5,8 @@ import time
 def main():
     deploy_lottery()
     start_lottery()
+    enter_lottery()
+    end_lottery()
 
 def deploy_lottery():
      account = get_account(id="freecodecamp-account")
@@ -28,3 +30,22 @@ def start_lottery():
     starting_tx.wait(1)
     print("The lottery is started!")
     
+def enter_lottery():
+    account = get_account()
+    lottery = Lottery[-1]
+    value = lottery.getEntranceFee() + 100000000
+    tx = lottery.enter({"from": account, "value":value})
+    tx.wait(1)
+    print("you entered the lottery now !")
+
+
+def end_lottery():
+    account = get_account()
+    lottery = Lottery[-1]
+    # we need to fund the contact then end the lottery
+    tx = fund_with_link(lottery.address)
+    tx.wait(1)
+    ending_transaction = lottery.endLottery({"from":account})
+    ending_transaction.wait(1)
+    time.sleep(60)
+    print(f"{lottery.recentWinner()} is the new winner")
